@@ -1,5 +1,5 @@
 // Made by camelCase
-//
+// Enables multicore to run gmod better.
 
 function Run_Console(com,num)
     RunConsoleCommand(com,num)
@@ -23,7 +23,7 @@ local function OpenWindow()
     D_Frame:SetSize(400,200)
     D_Frame:Center()
     D_Frame:MakePopup()
-    D_Frame:ShowCloseButton(true)
+    D_Frame:ShowCloseButton(false)
     function D_Frame.Paint(s,w,h)
         draw.RoundedBox(0,0,0,w,h,Color(0,0,0))
     end
@@ -33,7 +33,7 @@ local function OpenWindow()
     Panel:SetSize(400,50)
     Panel:Dock(BOTTOM)
     Panel:DockMargin(0,0,0,0)
-    function Panel:Paint(w,h)
+    function Panel.Paint(s,w,h)
         draw.RoundedBox(0,0,0,w,h,color_black)
     end
 
@@ -57,12 +57,11 @@ local function OpenWindow()
     Yes:SetText("Yes")
     Yes:SetFont("DermaDefault")
     Yes:SetTextColor( Color(255, 255, 255) )
-    Yes:SetWide(D_Frame:GetWide() * 0.5 - 14)
+    Yes:SetWide(D_Frame:GetWide() * 0.5 - 10)
     Yes:Dock(LEFT)
     function Yes.Paint(s, w, h)
         draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
         if s.IsHovered() then
-            local Hover = Lerp(FrameTime()*5,0,1)
             draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
         end
     end
@@ -73,7 +72,26 @@ local function OpenWindow()
         surface.PlaySound( "garrysmod/ui_click.wav" )
         chat.AddText("camelCase Multicore enabled!")
     end
+
+    local No = vgui.Create("DButton", Panel)
+    No:SetText("No")
+    No:SetFont("DermaDefault")
+    No:SetTextColor( Color(255, 255, 255) )
+    No:SetWide(D_Frame:GetWide() * 0.5 - 10)
+    No:Dock(RIGHT)
+    function No.Paint(s, w, h)
+        draw.RoundedBox(0, 0, 0, w, h, Color(47, 49, 54))
+        if s.IsHovered() then
+            draw.RoundedBox(0, 0, 0, w, h, Color(66, 70, 77))
+        end
+    end
+    No:SetTextColor( Color(255, 255, 255) )
+    No.DoClick = function()
+        D_Frame:Remove()
+    end
 end
+
+// hook.Add('Initialize')
 
 hook.Add( 'OnPlayerChat', 'camelCase_open_fps', function(ply, strText, bTeam, bDead) 
     if ply == LocalPlayer() and strText == '!fps' then
@@ -82,3 +100,4 @@ hook.Add( 'OnPlayerChat', 'camelCase_open_fps', function(ply, strText, bTeam, bD
 end)
 
 concommand.Add('camelCase_fps_boost', OpenWindow)
+concommand.Add('camelCase_disable_fps_boost', camelCaseDisableMulticore)
